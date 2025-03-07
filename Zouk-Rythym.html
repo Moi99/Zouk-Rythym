@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brazilian Zouk Rhythms</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        h1 {
+            color: #f1c40f;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #f39c12;
+            margin-top: 5px;
+            margin-bottom: 20px;
+            font-weight: normal;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 800px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .rhythm-selector {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .rhythm-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .rhythm-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .rhythm-btn.active {
+            background-color: #e74c3c;
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.5);
+        }
+
+        .rhythm-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .rhythm-info {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .rhythm-counting {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #3498db;
+        }
+
+        .rhythm-description {
+            margin-bottom: 20px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .beat-display {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .beat {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            margin: 0 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            position: relative;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: transform 0.1s ease, background-color 0.3s ease;
+        }
+
+        .beat-count {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .beat-sound {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .beat.emphasis {
+            background-color: #3498db;
+            box-shadow: 0 0 20px rgba(52, 152, 219, 0.7);
+        }
+
+        .beat.big-emphasis {
+            background-color: #e74c3c;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.7);
+        }
+
+        .beat.active {
+            transform: scale(1.2);
+            background-color: #f1c40f;
+            box-shadow: 0 0 25px rgba(241, 196, 15, 0.8);
+        }
+
+        .timeline-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 60px;
+            margin-bottom: 30px;
+        }
+
+        .timeline {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .timeline-progress {
+            position: absolute;
+            height: 100%;
+            width: 0;
+            background-color: #3498db;
+            border-radius: 4px;
+            transition: width 0.05s linear;
+        }
+
+        .timeline-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .beat-marker {
+            position: absolute;
+            top: -10px;
+            height: 28px;
+            width: 2px;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .count-markers {
+            position: absolute;
+            top: -30px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Arial', sans-serif;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .count-marker {
+            position: absolute;
+            transform: translateX(-50%);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            margin: 0 10px;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .play-btn:hover {
+            background-color: #27ae60;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+        }
+
+        .stop-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .stop-btn:hover {
+            background-color: #c0392b;
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.5);
+        }
+        
+        .settings-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            gap: 20px;
+        }
+        
+        .setting {
+            display: flex;
+            align-items: center;
+        }
+        
+        .setting-label {
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+        
+        .slider {
+            width: 150px;
+        }
+
+        @media (max-width: 600px) {
+            .rhythm-selector {
+                flex-wrap: wrap;
+            }
+            
+            .rhythm-btn {
+                margin: 5px;
+                font-size: 14px;
+            }
+            
+            .beat {
+                width: 50px;
+                height: 50px;
+                margin: 0 8px;
+            }
+            
+            .beat-count {
+                font-size: 16px;
+            }
+            
+            .beat-sound {
+                font-size: 12px;
+            }
+            
+            .count-markers {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Brazilian Zouk Dance Rhythms</h1>
+    <h2>Interactive Visualization for Beginners</h2>
+    
+    <div class="container">
+        <div class="rhythm-selector">
+            <button class="rhythm-btn active" data-rhythm="traditional1">Traditional 1</button>
+            <button class="rhythm-btn" data-rhythm="traditional2">Traditional 2</button>
+            <button class="rhythm-btn" data-rhythm="rnb1">R&B 1</button>
+            <button class="rhythm-btn" data-rhythm="rnb2">R&B 2</button>
+        </div>
+        
+        <div class="rhythm-display">
+            <div class="rhythm-info">
+                <h3 id="current-rhythm-title">Traditional 1</h3>
+                <p id="current-rhythm-timing">Timing: Slow, Quick, Quick (Duration: 2 beats)</p>
+            </div>
+            
+            <div class="rhythm-counting" id="rhythm-counting">
+                Alternative counting: Toum, Tchik, Tchik
+            </div>
+            
+            <p id="rhythm-description" class="rhythm-description">
+                The foundation of Brazilian Zouk. First beat is slower (1 beat), followed by two quick beats (½ beat each).
+                This creates the characteristic flowing movement in Zouk.
+            </p>
+            
+            <div class="beat-display" id="beat-display">
+                <!-- Beats will be generated here -->
+            </div>
+            
+            <div class="timeline-container">
+                <div class="timeline">
+                    <div class="timeline-progress" id="timeline-progress"></div>
+                </div>
+                <div class="timeline-markers" id="timeline-markers">
+                    <!-- Beat markers will be generated here -->
+                </div>
+                <div class="count-markers" id="count-markers">
+                    <span class="count-marker" style="left: 0%">1</span>
+                    <span class="count-marker" style="left: 25%">&</span>
+                    <span class="count-marker" style="left: 50%">2</span>
+                    <span class="count-marker" style="left: 75%">&</span>
+                    <span class="count-marker" style="left: 100%">3</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn play-btn" id="play-btn">Play</button>
+            <button class="control-btn stop-btn" id="stop-btn">Stop</button>
+        </div>
+        
+        <div class="settings-container">
+            <div class="setting">
+                <span class="setting-label">Speed:</span>
+                <input type="range" min="50" max="150" value="100" class="slider" id="speed-slider">
+                <span id="speed-value">100%</span>
+            </div>
+            
+            <div class="setting">
+                <span class="setting-label">Volume:</span>
+                <input type="range" min="0" max="100" value="70" class="slider" id="volume-slider">
+                <span id="volume-value">70%</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Rhythm definitions - corrected as per instructions
+            const rhythms = {
+                traditional1: {
+                    title: "Traditional 1",
+                    timing: "Timing: Slow, Quick, Quick (Duration: 2 beats)",
+                    counting: "Alternative counting: Toum, Tchik, Tchik",
+                    description: "A 3-beat pattern within 2 musical beats. The slow step takes 1 full beat, while each quick step takes half a beat.",
+                    beatCount: 3,
+                    sounds: ["toum", "tchik", "tchik"],
+                    beatPositions: [0, 0.5, 0.75], // Start positions (0 to 1 scale)
+                    beatDurations: [0.5, 0.25, 0.25], // Durations (0 to 1 scale, sum = 1)
+                    beatTimings: [0, 1, 1.5] // When beats occur on a 0-2 beat scale
+                },
+                traditional2: {
+                    title: "Traditional 2",
+                    timing: "Timing: Slow, Slow, Quick (Duration: 2 beats)",
+                    counting: "Alternative counting: Toum, Toum, Tchik",
+                    description: "A 3-beat pattern within 2 musical beats. Each slow takes 3/4 of a beat, while the quick takes 1/2 a beat.",
+                    beatCount: 3,
+                    sounds: ["toum", "toum", "tchik"],
+                    beatPositions: [0, 0.375, 0.75],
+                    beatDurations: [0.375, 0.375, 0.25],
+                    beatTimings: [0, 0.75, 1.5]
+                },
+                rnb1: {
+                    title: "R&B 1",
+                    timing: "Timing: Quick, Quick, Slow (Duration: 2 beats)",
+                    counting: "Alternative counting: Tchik, Tchik, Toum",
+                    description: "A 3-beat pattern within 2 musical beats. Each quick takes 1/2 a beat, while the slow takes a full beat.",
+                    beatCount: 3,
+                    sounds: ["tchik", "tchik", "toum"],
+                    beatPositions: [0, 0.25, 0.5],
+                    beatDurations: [0.25, 0.25, 0.5],
+                    beatTimings: [0, 0.5, 1]
+                },
+                rnb2: {
+                    title: "R&B 2",
+                    timing: "Timing: Quick, Very Quick, Slow (Duration: 2 beats)",
+                    counting: "Alternative counting: Toum, Ta, Ta",
+                    description: "A 3-beat pattern within 2 musical beats. Quick takes 3/4 beat, very quick takes 1/4 beat, and slow takes a full beat.",
+                    beatCount: 3,
+                    sounds: ["toum", "ta", "ta"],
+                    beatPositions: [0, 0.375, 0.5],
+                    beatDurations: [0.375, 0.125, 0.5],
+                    beatTimings: [0, 0.75, 1]
+                }
+            };
+            
+            // DOM Elements
+            const rhythmButtons = document.querySelectorAll('.rhythm-btn');
+            const currentRhythmTitle = document.getElementById('current-rhythm-title');
+            const currentRhythmTiming = document.getElementById('current-rhythm-timing');
+            const rhythmCounting = document.getElementById('rhythm-counting');
+            const rhythmDescription = document.getElementById('rhythm-description');
+            const beatDisplay = document.getElementById('beat-display');
+            const timelineProgress = document.getElementById('timeline-progress');
+            const timelineMarkers = document.getElementById('timeline-markers');
+            const playButton = document.getElementById('play-btn');
+            const stopButton = document.getElementById('stop-btn');
+            const speedSlider = document.getElementById('speed-slider');
+            const speedValue = document.getElementById('speed-value');
+            const volumeSlider = document.getElementById('volume-slider');
+            const volumeValue = document.getElementById('volume-value');
+            
+            // Create audio context
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const audioContext = new AudioContext();
+            let volume = 0.7;
+            
+            // Function to create and play sounds
+            function playSound(type) {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                // Set oscillator type and frequency based on sound type
+                if (type === "toum") {
+                    oscillator.type = 'sine';
+                    oscillator.frequency.value = 60; // Bass drum sound
+                } else if (type === "tchik") {
+                    oscillator.type = 'triangle';
+                    oscillator.frequency.value = 180; // Higher pitched sound
+                } else if (type === "ta") {
+                    oscillator.type = 'triangle';
+                    oscillator.frequency.value = 220; // Higher pitched sound
+                }
+                
+                // Set volume
+                gainNode.gain.value = volume;
+                
+                // Connect nodes
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Schedule envelope
+                const now = audioContext.currentTime;
+                gainNode.gain.setValueAtTime(volume, now);
+                oscillator.start(now);
+                
+                // Quick fade out for percussive sound
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                oscillator.stop(now + 0.3);
+            }
+            
+            // State
+            let currentRhythm = 'traditional1';
+            let isPlaying = false;
+            let animationFrame;
+            let lastFrameTime = 0;
+            let totalElapsedTime = 0;
+            const fullCycleDuration = 2000; // 2 beats = 2000ms at 60 BPM
+            
+            // Update the visualization based on the current rhythm
+            function updateRhythmDisplay() {
+                const rhythm = rhythms[currentRhythm];
+                
+                // Update text information
+                currentRhythmTitle.textContent = rhythm.title;
+                currentRhythmTiming.textContent = rhythm.timing;
+                rhythmCounting.textContent = rhythm.counting;
+                rhythmDescription.textContent = rhythm.description;
+                
+                // Clear existing beats
+                beatDisplay.innerHTML = '';
+                
+                // Create new beats
+                for (let i = 0; i < rhythm.beatCount; i++) {
+                    const beat = document.createElement('div');
+                    beat.className = 'beat';
+                    
+                    // Add emphasis based on sound type
+                    if (rhythm.sounds[i] === "toum") {
+                        beat.classList.add('big-emphasis');
+                    } else if (rhythm.sounds[i] === "tchik") {
+                        beat.classList.add('emphasis');
+                    }
+                    
+                    // Add beat number and sound text
+                    const beatCount = document.createElement('div');
+                    beatCount.className = 'beat-count';
+                    beatCount.textContent = i + 1;
+                    
+                    const beatSound = document.createElement('div');
+                    beatSound.className = 'beat-sound';
+                    beatSound.textContent = rhythm.sounds[i];
+                    
+                    beat.appendChild(beatCount);
+                    beat.appendChild(beatSound);
+                    beatDisplay.appendChild(beat);
+                }
+                
+                // Clear existing beat markers
+                timelineMarkers.innerHTML = '';
+                
+                // Create beat markers
+                for (let i = 0; i < rhythm.beatCount; i++) {
+                    const marker = document.createElement('div');
+                    marker.className = 'beat-marker';
+                    marker.style.left = (rhythm.beatTimings[i] / 2 * 100) + '%';
+                    timelineMarkers.appendChild(marker);
+                }
+            }
+            
+            // Animation function using requestAnimationFrame for smoother animation
+            function animate(currentTime) {
+                if (!isPlaying) return;
+                
+                if (!lastFrameTime) lastFrameTime = currentTime;
+                const deltaTime = currentTime - lastFrameTime;
+                lastFrameTime = currentTime;
+                
+                // Adjust time based on speed
+                const speedFactor = parseInt(speedSlider.value) / 100;
+                const adjustedDelta = deltaTime * speedFactor;
+                
+                totalElapsedTime += adjustedDelta;
+                
+                // Reset at the end of a cycle
+                if (totalElapsedTime >= fullCycleDuration) {
+                    totalElapsedTime = totalElapsedTime % fullCycleDuration;
+                }
+                
+                // Calculate progress as percentage
+                const progressPercentage = (totalElapsedTime / fullCycleDuration) * 100;
+                timelineProgress.style.width = progressPercentage + '%';
+                
+                // Get current rhythm
+                const rhythm = rhythms[currentRhythm];
+                const beats = document.querySelectorAll('.beat');
+                
+                // Reset active state
+                beats.forEach(beat => beat.classList.remove('active'));
+                
+                // Determine which beat is active based on current time
+                const currentTimeInBeats = (totalElapsedTime / fullCycleDuration) * 2; // Convert to 0-2 beat scale
+                
+                for (let i = 0; i < rhythm.beatCount; i++) {
+                    const beatStart = rhythm.beatTimings[i];
+                    const beatEnd = beatStart + rhythm.beatDurations[i] * 2; // Scale duration to 0-2 beat scale
+                    
+                    // Check if current time is within this beat
+                    if (currentTimeInBeats >= beatStart && currentTimeInBeats < beatEnd) {
+                        beats[i].classList.add('active');
+                        
+                        // Play sound at the start of the beat
+                        if (Math.abs(currentTimeInBeats - beatStart) < 0.05) {
+                            playSound(rhythm.sounds[i]);
+                        }
+                        break;
+                    }
+                    
+                    // Handle case where we're at the last beat and approaching the loop point
+                    if (i === rhythm.beatCount - 1 && currentTimeInBeats >= beatEnd) {
+                        // The next beat will be the first one after looping
+                        const nextBeatStart = 0; // First beat starts at 0
+                        
+                        // If we're very close to the first beat of the next cycle
+                        if (2 - currentTimeInBeats < 0.05) {
+                            playSound(rhythm.sounds[0]); // Play first beat sound
+                        }
+                    }
+                }
+                
+                // Continue animation
+                animationFrame = requestAnimationFrame(animate);
+            }
+            
+            // Start playback
+            function startPlayback() {
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                
+                if (!isPlaying) {
+                    isPlaying = true;
+                    lastFrameTime = 0;
+                    animationFrame = requestAnimationFrame(animate);
+                }
+            }
+            
+            // Stop playback
+            function stopPlayback() {
+                isPlaying = false;
+                cancelAnimationFrame(animationFrame);
+                timelineProgress.style.width = '0%';
+                
+                // Reset active state
+                const beats = document.querySelectorAll('.beat');
+                beats.forEach(beat => beat.classList.remove('active'));
+                
+                totalElapsedTime = 0;
+            }
+            
+            // Event Listeners
+            rhythmButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update active button UI
+                    rhythmButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update current rhythm
+                    currentRhythm = this.dataset.rhythm;
+                    
+                    // Update display
+                    updateRhythmDisplay();
+                });
+            });
+            
+            playButton.addEventListener('click', startPlayback);
+            stopButton.addEventListener('click', stopPlayback);
+            
+            speedSlider.addEventListener('input', function() {
+                speedValue.textContent = this.value + '%';
+            });
+            
+            volumeSlider.addEventListener('input', function() {
+                volume = this.value / 100;
+                volumeValue.textContent = this.value + '%';
+            });
+            
+            // Initialize
+            updateRhythmDisplay();
+        });
+    </script>
+</body>
+</html>
